@@ -21,6 +21,8 @@ AFountain::AFountain()
 	Splash->SetupAttachment(Body);
 
 	Water->SetRelativeLocation(FVector(0.0f, 0.0f, 135.0f));
+	Light->SetRelativeLocation(FVector(0.0f, 0.0f, 195.0f));
+	Splash->SetRelativeLocation(FVector(0.0f, 0.0f, 195.0f));
 
 }
 
