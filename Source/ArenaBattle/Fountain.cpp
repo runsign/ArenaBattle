@@ -32,8 +32,10 @@ AFountain::AFountain()
 		Body->SetStaticMesh(SM_BODY.Object);
 	}
 
+	// ConstructorHelpers 클래스의 FObjectFinder 를 통해 레퍼런스 주소를 받아온다. 에셋을 찾기까지만 한다.
 	ConstructorHelpers::FObjectFinder<UStaticMesh> SM_WATER(TEXT("/Script/Engine.StaticMesh'/Game/InfinityBladeGrassLands/Effects/FX_Meshes/Env/SM_Plains_Fountain_02.SM_Plains_Fountain_02'"));
 
+	// 이후 에셋을 찾는데 성공했다면 컴포넌트를 에셋에 연결해줌으로써 에셋 제작이 끝나게 된다. 
 	if (SM_WATER.Succeeded())
 	{
 		Water->SetStaticMesh(SM_WATER.Object);
@@ -41,12 +43,10 @@ AFountain::AFountain()
 
 	ConstructorHelpers::FObjectFinder<UParticleSystem> PS_SPLASH(TEXT("/Script/Engine.ParticleSystem'/Game/InfinityBladeGrassLands/Effects/FX_Ambient/Water/P_Water_Fountain_Splash_Base_01.P_Water_Fountain_Splash_Base_01'"));
 
-	if (SM_BODY.Succeeded())
+	if (PS_SPLASH.Succeeded())
 	{
 		Splash->SetTemplate(PS_SPLASH.Object);
 	}
-
-
 }
 
 // Called when the game starts or when spawned
