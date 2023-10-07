@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "EngineMinimal.h"
+#include "ArenaBattle.h"
 #include "GameFramework/Actor.h"
 #include "Fountain.generated.h"
 
@@ -18,6 +18,11 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void PostInitializeComponents() override;
+
+
+
 
 public:	
 	// Called every frame
@@ -40,4 +45,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Number)
 	int32 ID;
+
+private:
+	// private으로 변수를 두면 기본적으로는 접근이 불가능하지만
+	// AllowPrivateAccess를 true로 두면 추후 블루프린트에서 접근이 가능해진다.
+	UPROPERTY(EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+	float RotateSpeed;
+
+
 };

@@ -47,6 +47,8 @@ AFountain::AFountain()
 	{
 		Splash->SetTemplate(PS_SPLASH.Object);
 	}
+
+	RotateSpeed = 30.0f;
 }
 
 // Called when the game starts or when spawned
@@ -54,12 +56,27 @@ void AFountain::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	ABLOG_S(Warning);
+	ABLOG(Warning, TEXT("Actor Name : %s, ID : %d, Location X : %.3f"), *GetName(), ID, GetActorLocation().X);
+}
+
+void AFountain::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	ABLOG_S(Warning);
+}
+
+void AFountain::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	ABLOG_S(Warning);
+
 }
 
 // Called every frame
 void AFountain::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	AddActorLocalRotation(FRotator(0.0f, RotateSpeed * DeltaTime, 0.0f));
 }
 
