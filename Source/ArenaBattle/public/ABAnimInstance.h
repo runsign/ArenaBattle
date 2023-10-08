@@ -16,6 +16,8 @@ class ARENABATTLE_API UABAnimInstance : public UAnimInstance
 
 public:
 	UABAnimInstance();
+	// NativeUpdateAnimation 함수를 이용해 폰의 정보를 가져온다.
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override; 
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Pawn, Meta=(AllowPrivateAccess=true))
