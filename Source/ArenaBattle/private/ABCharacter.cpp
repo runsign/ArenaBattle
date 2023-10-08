@@ -55,6 +55,9 @@ void AABCharacter::SetControlMode(int32 ControlMode)
 		SpringArm->bInheritYaw = true;
 		SpringArm->bDoCollisionTest = true;
 		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
+
 	}
 
 }
@@ -80,12 +83,14 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AABCharacter::UpDown(float NewAxisValue)
 {
-	AddMovementInput(GetActorForwardVector(), NewAxisValue);
+	// 카메라의 회전값으로부터 벡터를 가져오는 코드.
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
 }
 
 void AABCharacter::LeftRight(float NewAxisValue)
 {
-	AddMovementInput(GetActorRightVector(), NewAxisValue);
+	// 카메라의 회전값으로부터 벡터를 가져오는 코드.
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
 
 void AABCharacter::LookUp(float NewAxisValue)
