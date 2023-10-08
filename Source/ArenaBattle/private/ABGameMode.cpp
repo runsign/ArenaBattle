@@ -2,13 +2,13 @@
 
 
 #include "ABGameMode.h"
-#include "ABPawn.h" // DefaultPawn을 지정하기 위해 헤더파일을 참조해야함.
+#include "ABCharacter.h"/*"ABPawn.h"*/ // DefaultPawn을 지정하기 위해 헤더파일을 참조해야함.
 #include "ABPlayerController.h" // PlayerController을 지정하기 위해 헤더파일을 참조해야함.
 
 AABGameMode::AABGameMode()
 {
 	// DefaultPawn을 지정. 클래스를 지정하는 것이 특징이다
-	DefaultPawnClass = AABPawn::StaticClass();
+	DefaultPawnClass = AABCharacter::StaticClass();
 	// PlayerController을 지정. 클래스를 지정하는 것이 특징이다
 	PlayerControllerClass = AABPlayerController::StaticClass();
 }

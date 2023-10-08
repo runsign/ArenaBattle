@@ -26,6 +26,17 @@ AABPawn::AABPawn()
 	SpringArm->TargetArmLength = 400.f;
 	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
 
+	
+	// 애니메이션을 블루프린트를 이용해서 캐릭터에게 입히는 부분
+	Mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> WARRIOR_ANIM(TEXT("/Script/Engine.AnimBlueprint'/Game/Book/Animation/WarriorAnimBlueprint.WarriorAnimBlueprint_C'"));
+	if (WARRIOR_ANIM.Succeeded())
+	{
+		Mesh->SetAnimInstanceClass(WARRIOR_ANIM.Class);
+	}
+
+	// 스켈레탈매시를 폰에 입히는 부분
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard'"));
 
 	if (SK_CARDBOARD.Succeeded())
@@ -33,19 +44,21 @@ AABPawn::AABPawn()
 		Mesh->SetSkeletalMesh(SK_CARDBOARD.Object);
 	}
 
-	Mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-
-	static ConstructorHelpers::FClassFinder<UAnimInstance> WARRIOR_ANIM(TEXT("/Script/Engine.AnimBlueprint'/Game/Book/Animations/WarriorAnimBluePrint.WarriorAnimBluePrint_C'"));
-	if (WARRIOR_ANIM.Succeeded())
-	{
-		Mesh->SetAnimInstanceClass(WARRIOR_ANIM.Class);
-	}
 }
 
 // Called when the game starts or when spawned
 void AABPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	/* 블루프린트 없이 코딩으로 애니메이션을 입히는 코드.
+	Mesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	UAnimationAsset* AnimAsset = LoadObject<UAnimationAsset>(nullptr, TEXT("/Script/Engine.AnimSequence'/Game/Book/Animation/WarriorRun.WarriorRun'"));
+	if (AnimAsset != nullptr)
+	{
+		Mesh->PlayAnimation(AnimAsset, true);
+	}
+	*/
 	
 }
 
