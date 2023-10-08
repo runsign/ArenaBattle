@@ -34,6 +34,9 @@ AABCharacter::AABCharacter()
 	}
 	SetControlMode(EControlMode::DIABLO);
 
+	ArmLengthSpeed = 3.0f;
+	ArmRotationSpeed = 10.0f;
+
 }
 
 // Called when the game starts or when spawned
@@ -49,25 +52,25 @@ void AABCharacter::SetControlMode(EControlMode NewControlMode)
 	switch (CurrentControlMode)
 	{
 	case EControlMode::GTA:
-		SpringArm->TargetArmLength = 450.f;
-		SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
-		//ArmLengthTo = 450.f;
-		SpringArm->bUsePawnControlRotation = true;
-		SpringArm->bInheritPitch = true;
-		SpringArm->bInheritRoll = true;
-		SpringArm->bInheritYaw = true;
-		SpringArm->bDoCollisionTest = true;
-		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		//SpringArm->TargetArmLength = 450.f; // 스프링암의 길이를 제어.
+		//SpringArm->SetRelativeRotation(FRotator::ZeroRotator); // 부모액터와의 상대적인 각도를 조절.
+		ArmLengthTo = 450.0f;
+		SpringArm->bUsePawnControlRotation = true; // true면 대상(스프링암)이 입력에 따라 회전함.
+		SpringArm->bInheritPitch = true; // Pitch 방향으로 회전이 가능한지 체크
+		SpringArm->bInheritRoll = true; // Roll 방향으로 회전이 가능한지 체크
+		SpringArm->bInheritYaw = true; // Yaw 방향으로 회전이 가능한지 체크
+		SpringArm->bDoCollisionTest = true; // 카메라와 플레이어 사이에 물체가 있을때 카메라가 앞으로 오도록 설정.
+		bUseControllerRotationYaw = false; // true면 카메라 시점에 따라 캐릭터 움직이는 방햐 바뀜
+		GetCharacterMovement()->bOrientRotationToMovement = true; // true면 입력받는 방향으로 폰이 회전함 (단 액터의 회전값을 받음)
+		GetCharacterMovement()->bUseControllerDesiredRotation = false; // true면 입력받는 방향으로 폰이 회전함 (컨트롤로의 회전값을 받음)
 		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 		break;
 
 	case EControlMode::DIABLO:
-		SpringArm->TargetArmLength = 800.f;
-		SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
-		//ArmLengthTo = 800.f;
-		//ArmRotationTo = FRotator(-45.f, 0.f, 0.f);
+		//SpringArm->TargetArmLength = 800.f;
+		//SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+		ArmLengthTo = 800.f;
+		ArmRotationTo = FRotator(-45.f, 0.f, 0.f);
 		SpringArm->bUsePawnControlRotation = false;
 		SpringArm->bInheritPitch = false;
 		SpringArm->bInheritRoll = false;
@@ -86,12 +89,21 @@ void AABCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, ArmLengthTo, DeltaTime, ArmLengthSpeed);
+
 	switch (CurrentControlMode)
 	{
 	case EControlMode::DIABLO:
-		if (DirectionToMove.SizeSquared() > 0.0f)
+		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime, ArmRotationSpeed));
+		break;
+	}
+
+	switch (CurrentControlMode)
+	{
+	case EControlMode::DIABLO:
+		if (DirectionToMove.SizeSquared() > 0.f)
 		{
-			GetController()->SetControlRotation(FRotationMatrix::MakeFromX(DirectionToMove).Rotator());
+			GetController()->SetControlRotation(DirectionToMove.ToOrientationRotator());
 			AddMovementInput(DirectionToMove);
 		}
 		break;
@@ -165,9 +177,11 @@ void AABCharacter::ViewChange()
 	switch (CurrentControlMode)
 	{
 	case EControlMode::GTA:
+		GetController()->SetControlRotation(GetActorRotation());
 		SetControlMode(EControlMode::DIABLO);
 		break;
 	case EControlMode::DIABLO:
+		GetController()->SetControlRotation(SpringArm->GetRelativeRotation()); //책에는 RelativeRotation 으로 나와있는데 안됨.
 		SetControlMode(EControlMode::GTA);
 		break;
 	}
