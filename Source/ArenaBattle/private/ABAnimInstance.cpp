@@ -6,17 +6,23 @@
 UABAnimInstance::UABAnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
+	IsInAir = false;
 }
 
 void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	// TryGetPawnOwner()를 통해 함수 Pawn을 찾고 Pawn이 있다면
+	// TryGetPawnOwner()는 애님인스턴스 클래스의 함수로 현재 애님인스턴스에 연결된 Pawn 객체를 반환하는 목적으로 사용되며
 	// CurrentPawnSpeed를 폰의 속도로 동기화 해주는 코드이다.
 	auto Pawn = TryGetPawnOwner();
 	if (::IsValid(Pawn))
 	{
 		CurrentPawnSpeed = Pawn->GetVelocity().Size();
+		auto Character = Cast<ACharacter>(Pawn);
+		if (Character)
+		{
+			IsInAir = Character->GetMovementComponent()->IsFalling();
+		}
 	}
 }
