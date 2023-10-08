@@ -59,7 +59,7 @@ void AABCharacter::SetControlMode(EControlMode NewControlMode)
 		SpringArm->bDoCollisionTest = true;
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		//GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 		break;
 
@@ -73,12 +73,11 @@ void AABCharacter::SetControlMode(EControlMode NewControlMode)
 		SpringArm->bInheritRoll = false;
 		SpringArm->bInheritYaw = false;
 		SpringArm->bDoCollisionTest = false;
-		bUseControllerRotationYaw = true;
-		//GetCharacterMovement()->bOrientRotationToMovement = false;
-		//GetCharacterMovement()->bUseControllerDesiredRotation = true;
-		//GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 		break;
-
 	}
 }
 
@@ -105,6 +104,7 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction(TEXT("ViewChange"), EInputEvent::IE_Pressed, this, &AABCharacter::ViewChange);
 	// InputComponent 에서 사용자의 컨트롤을 위한 입력설정을 Bind 한다.
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AABCharacter::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AABCharacter::LeftRight);
@@ -156,6 +156,19 @@ void AABCharacter::Turn(float NewAxisValue)
 	{
 	case EControlMode::GTA:
 		AddControllerYawInput(NewAxisValue);
+		break;
+	}
+}
+
+void AABCharacter::ViewChange()
+{
+	switch (CurrentControlMode)
+	{
+	case EControlMode::GTA:
+		SetControlMode(EControlMode::DIABLO);
+		break;
+	case EControlMode::DIABLO:
+		SetControlMode(EControlMode::GTA);
 		break;
 	}
 }

@@ -49,4 +49,5 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 
+	void ViewChange();
 };
