@@ -41,6 +41,9 @@ AABCharacter::AABCharacter()
 
 	IsAttacking = false;
 
+	MaxCombo = 4;
+	AttackEndComboState();
+
 }
 
 // Called when the game starts or when spawned
@@ -118,10 +121,10 @@ void AABCharacter::Tick(float DeltaTime)
 void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
-	ABCHECK(nullptr != AnimInstance);
+	ABAnim = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
+	ABCHECK(nullptr != ABAnim);
 
-	AnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttakcMontageEnded);
+	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttakcMontageEnded);
 }
 
 // Called to bind functionality to input
@@ -205,16 +208,19 @@ void AABCharacter::ViewChange()
 void AABCharacter::Attack()
 {
 	if (IsAttacking) return;
-
 	/*
 	GetMesh() : 캐릭터의 스켈레탈 매시에 연결된 인스턴스를 가져옴
 	GetAnimInstance() : 해당매시에 연결된 애니메이션 인스턴스를 반환. 캐릭터의 애니메이션 상태 및 재생을 관리
 	AnimGraph의 Default Node는 애니메이션의 초기상태를 셋업하기 위함.
-	*/
+
 	auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 	if (nullptr == AnimInstance) return;
 
 	AnimInstance->PlayAttackMontage();
+	*/
+
+	ABAnim->PlayAttackMontage();
+
 	IsAttacking = true;
 }
 
@@ -222,5 +228,20 @@ void AABCharacter::OnAttakcMontageEnded(UAnimMontage* Montage, bool bInterrupted
 {
 	ABCHECK(IsAttacking);
 	IsAttacking = false;
+}
+
+void AABCharacter::AttackStartComboState()
+{
+	CanNextCombo = true;
+	IsComboInputOn = false;
+	ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1));
+	CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
+}
+
+void AABCharacter::AttackEndComboState()
+{
+	IsComboInputOn = false;
+	CanNextCombo = false;
+	CurrentCombo = 0;
 }
 
