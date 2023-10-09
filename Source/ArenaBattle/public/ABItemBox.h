@@ -27,6 +27,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Box)
 	UStaticMeshComponent* Box;
 
+	UPROPERTY(VisibleAnywhere, Category = Effect)
+	UParticleSystemComponent* Effect;
+
 	UPROPERTY(EditInstanceOnly, Category = Box)
 	TSubclassOf<class AABWeapon> WeaponItemClass;
 
@@ -34,5 +37,8 @@ public:
 private:
 	UFUNCTION()
 	void OnCharacterOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnEffectFinished(class UParticleSystemComponent* PSystem);
 
 };
