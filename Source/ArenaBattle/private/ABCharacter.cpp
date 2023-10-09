@@ -51,7 +51,7 @@ AABCharacter::AABCharacter()
 	AttackRadius = 50.0f;
 
 	/*
-	// 손에 무기를 붙이는 코드
+	// 손에 무기를 붙이는 코드. 무기액터를 만들어 붙이는걸 하기위해 주석처리 한다. 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	if (GetMesh()->DoesSocketExist(WeaponSocket))
 	{
@@ -71,15 +71,15 @@ AABCharacter::AABCharacter()
 void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// 무기액터를 만들어 게임시작시 액터에게 붙이는 코드
+	/*
+	// 무기액터를 만들어 게임시작시 액터에게 붙이는 코드. 아이템박스에서 무기를 얻게하기위해 주석처리 한다.
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AABWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);\
 		if (nullptr != CurWeapon)
 		{
 			CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 		}
-
+	*/
 }
 
 void AABCharacter::SetControlMode(EControlMode NewControlMode)
@@ -213,6 +213,24 @@ void AABCharacter::UpDown(float NewAxisValue)
 	}
 }
 
+bool AABCharacter::CanSetWeapon()
+{
+	return (nullptr == CurrentWeapon);
+}
+
+void AABCharacter::SetWeapon(AABWeapon* NewWeapon)
+{
+	ABCHECK(nullptr != NewWeapon && nullptr == CurrentWeapon);
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	if (nullptr != NewWeapon)
+	{
+		NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+		NewWeapon->SetOwner(this);
+		CurrentWeapon = NewWeapon;
+	}
+}
+
+
 void AABCharacter::LeftRight(float NewAxisValue)
 {
 	switch (CurrentControlMode)
@@ -226,6 +244,8 @@ void AABCharacter::LeftRight(float NewAxisValue)
 		break;
 	}
 }
+
+
 
 void AABCharacter::LookUp(float NewAxisValue)
 {

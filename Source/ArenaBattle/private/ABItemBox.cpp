@@ -2,6 +2,7 @@
 
 
 #include "ABItemBox.h"
+#include "ABWeapon.h"
 
 // Sets default values
 AABItemBox::AABItemBox()
@@ -37,7 +38,7 @@ AABItemBox::AABItemBox()
 	Trigger->SetCollisionProfileName(TEXT("ItemBox"));
 	Box->SetCollisionProfileName(TEXT("NoCollition"));
 
-	//WeaponItemClass = AABWeapon::StaticClass();
+	WeaponItemClass = AABWeapon::StaticClass();
 
 }
 
