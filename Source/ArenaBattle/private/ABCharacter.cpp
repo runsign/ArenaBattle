@@ -72,6 +72,7 @@ void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// 무기액터를 만들어 게임시작시 액터에게 붙이는 코드
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AABWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);\
 		if (nullptr != CurWeapon)
