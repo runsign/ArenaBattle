@@ -125,6 +125,8 @@ void AABCharacter::PostInitializeComponents()
 	ABCHECK(nullptr != ABAnim);
 
 	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttakcMontageEnded);
+
+
 }
 
 // Called to bind functionality to input
