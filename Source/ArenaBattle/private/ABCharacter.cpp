@@ -39,6 +39,8 @@ AABCharacter::AABCharacter()
 	ArmRotationSpeed = 10.0f;
 	GetCharacterMovement()->JumpZVelocity = 800.0f;
 
+	IsAttacking = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -111,6 +113,15 @@ void AABCharacter::Tick(float DeltaTime)
 		break;
 	}
 
+}
+
+void AABCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
+	ABCHECK(nullptr != AnimInstance);
+
+	AnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttakcMontageEnded);
 }
 
 // Called to bind functionality to input
@@ -193,9 +204,23 @@ void AABCharacter::ViewChange()
 
 void AABCharacter::Attack()
 {
+	if (IsAttacking) return;
+
+	/*
+	GetMesh() : 캐릭터의 스켈레탈 매시에 연결된 인스턴스를 가져옴
+	GetAnimInstance() : 해당매시에 연결된 애니메이션 인스턴스를 반환. 캐릭터의 애니메이션 상태 및 재생을 관리
+	AnimGraph의 Default Node는 애니메이션의 초기상태를 셋업하기 위함.
+	*/
 	auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 	if (nullptr == AnimInstance) return;
 
 	AnimInstance->PlayAttackMontage();
+	IsAttacking = true;
+}
+
+void AABCharacter::OnAttakcMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	ABCHECK(IsAttacking);
+	IsAttacking = false;
 }
 
