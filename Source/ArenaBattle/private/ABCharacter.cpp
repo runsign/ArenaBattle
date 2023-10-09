@@ -126,6 +126,16 @@ void AABCharacter::PostInitializeComponents()
 
 	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttakcMontageEnded);
 
+	ABAnim->OnNextAttackCheck.AddLambda([this]() -> void {
+		ABLOG(Warning, TEXT("OnNextAttackCheck"));
+		CanNextCombo = false;
+
+		if (IsComboInputOn)
+		{
+			AttackStartComboState();
+			ABAnim->JumpToAttackMontageSection(CurrentCombo);
+		}
+		});
 
 }
 
@@ -209,27 +219,32 @@ void AABCharacter::ViewChange()
 
 void AABCharacter::Attack()
 {
-	if (IsAttacking) return;
-	/*
-	GetMesh() : 캐릭터의 스켈레탈 매시에 연결된 인스턴스를 가져옴
-	GetAnimInstance() : 해당매시에 연결된 애니메이션 인스턴스를 반환. 캐릭터의 애니메이션 상태 및 재생을 관리
-	AnimGraph의 Default Node는 애니메이션의 초기상태를 셋업하기 위함.
+	if (IsAttacking)
+	{
+		ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
+		if (CanNextCombo)
+		{
+			IsComboInputOn = true;
+		}
+	}
+	else
+	{
+		ABCHECK(CurrentCombo == 0);
+		AttackStartComboState();
+		ABAnim->PlayAttackMontage();
+		ABAnim->JumpToAttackMontageSection(CurrentCombo);
+		IsAttacking = true;
+	}
 
-	auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
-	if (nullptr == AnimInstance) return;
 
-	AnimInstance->PlayAttackMontage();
-	*/
-
-	ABAnim->PlayAttackMontage();
-
-	IsAttacking = true;
 }
 
 void AABCharacter::OnAttakcMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	ABCHECK(IsAttacking);
+	ABCHECK(CurrentCombo > 0);
 	IsAttacking = false;
+	AttackEndComboState();
 }
 
 void AABCharacter::AttackStartComboState()
