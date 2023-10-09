@@ -7,6 +7,7 @@ UABAnimInstance::UABAnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
 	IsInAir = false;
+	IsDead = false;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Script/Engine.AnimMontage'/Game/Book/Animation/SK_Mannequin_Skeleton_Montage.SK_Mannequin_Skeleton_Montage'"));
 	if (ATTACK_MONTAGE.Succeeded())
@@ -22,7 +23,9 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// TryGetPawnOwner()는 애님인스턴스 클래스의 함수로 현재 애님인스턴스에 연결된 Pawn 객체를 반환하는 목적으로 사용되며
 	// CurrentPawnSpeed를 폰의 속도로 동기화 해주는 코드이다.
 	auto Pawn = TryGetPawnOwner();
-	if (::IsValid(Pawn))
+	if (!::IsValid(Pawn)) return;
+
+	if (!IsDead)
 	{
 		CurrentPawnSpeed = Pawn->GetVelocity().Size();
 		auto Character = Cast<ACharacter>(Pawn);
@@ -35,11 +38,13 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UABAnimInstance::PlayAttackMontage()
 {
-		Montage_Play(AttackMontage, 1.0f);
+	ABCHECK(!IsDead);
+	Montage_Play(AttackMontage, 1.0f);
 }
 
 void UABAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
+	ABCHECK(!IsDead);
 	ABCHECK(Montage_IsPlaying(AttackMontage));
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage);
 }
